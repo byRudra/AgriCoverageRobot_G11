@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.wbproj
+worlds/.*.wbproj
+worlds/.*.jpg
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.lof
+report/*.lot
+report/build.log
+results/*/debug_dump.json
