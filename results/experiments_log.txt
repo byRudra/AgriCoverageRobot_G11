@@ -1,0 +1,12 @@
+C:\ProgramData\anaconda3\Lib\site-packages\numpy\_core\_methods.py:194: RuntimeWarning: invalid value encountered in subtract
+  x = asanyarray(arr - arrmean)
+E1: 120 runs ...
+E2: 150 runs ...
+proposed_arc    done 20/20  cov 98.85+-0.14 (min 98.52)  time 412+-2  clr 0.215 (min 0.194)  xte 2.1  skips-runs 0
+proposed_pivot  done 20/20  cov 98.83+-0.14 (min 98.51)  time 443+-2  clr 0.214 (min 0.196)  xte 1.4  skips-runs 0
+bug2_arc        done 20/20  cov 95.41+-2.15 (min 89.78)  time 472+-50  clr 0.228 (min 0.195)  xte 11.3  skips-runs 11
+bug2_pivot      done 20/20  cov 95.35+-2.13 (min 89.78)  time 506+-58  clr 0.232 (min 0.194)  xte 11.5  skips-runs 11
+apf_arc         done 15/20  cov 85.30+-26.69 (min 13.32)  time 781+-437  clr 0.124 (min 0.109)  xte 28.3  skips-runs 19
+apf_pivot       done 16/20  cov 87.66+-25.66 (min 13.35)  time 731+-404  clr 0.124 (min 0.115)  xte 25.1  skips-runs 18
+E3 [{'tool_width': 1.0, 'coverage_mean': np.float64(96.36107371558928), 'coverage_std': np.float64(0.21524448803515797), 'overlap_mean': np.float64(7.672311296229649), 'overlap_std': np.float64(0.8408357617120519)}, {'tool_width': 1.1, 'coverage_mean': np.float64(97.96308294828913), 'coverage_std': np.float64(0.17061664479406768), 'overlap_mean': np.float64(15.578407191208), 'overlap_std': np.float64(0.8990112091042664)}, {'tool_width': 1.2, 'coverage_mean': np.float64(98.84234759897898), 'coverage_std': np.float64(0.14290784387225636), 'overlap_mean': np.float64(23.89194186628269), 'overlap_std': np.float64(0.9553198890698453)}, {'tool_width': 1.3, 'coverage_mean': np.float64(99.40727669091959), 'coverage_std': np.float64(0.11391171291758469), 'overlap_mean': np.float64(32.192489854952285), 'overlap_std': np.float64(0.9850356060154747)}, {'tool_width': 1.4, 'coverage_mean': np.float64(99.73629489735899), 'coverage_std': np.float64(0.08886541140761114), 'overlap_mean': np.float64(40.49068607458068), 'overlap_std': np.float64(0.998150687434419)}]
+E4 [{'gains': 'Kp=1.0, Kd=0.00', 'kp': 1.0, 'kd': 0.0, 'ki': 0.0, 'rise_s': np.float64(2.560000000000002), 'overshoot_pct': np.float64(12.740211603481383), 'settling_s': np.float64(5.920000000000004)}, {'gains': 'Kp=2.2, Kd=0.12 (used)', 'kp': 2.2, 'kd': 0.12, 'ki': 0.05, 'rise_s': np.float64(2.528000000000002), 'overshoot_pct': np.float64(0.34660449390709247), 'settling_s': np.float64(2.912000000000002)}, {'gains': 'Kp=4.5, Kd=0.00', 'kp': 4.5, 'kd': 0.0, 'ki': 0.0, 'rise_s': np.float64(3.0080000000000022), 'overshoot_pct': 0.0, 'settling_s': np.float64(3.808000000000003)}]
