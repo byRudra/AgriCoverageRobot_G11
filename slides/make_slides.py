@@ -434,7 +434,7 @@ picture_fit(s, "shot_top_proposed.jpg", Inches(7.2), Inches(0.9), Inches(5.6), I
 text(s, Inches(0.8), Inches(1.2), Inches(6), Inches(1.2), "Thank you", size=54, bold=True, color=WHITE)
 text(s, Inches(0.8), Inches(2.4), Inches(6), Inches(0.8), "Questions and answers", size=28, color=RGBColor(0xBB, 0xE5, 0xC4))
 text(s, Inches(0.8), Inches(3.6), Inches(6.2), Inches(2.5),
-     ["GitHub:  ______________________________", "",
+     ["GitHub:  github.com/byRudra/AgriCoverageRobot_G11", "",
       "Jahanvi Sengar  |  Aagman Sharma  |  Rudra Gupta", "Sahil Agarwal  |  Harsh Prakash Sinha"],
      size=20, color=WHITE)
 text(s, Inches(7.2), Inches(5.2), Inches(5.6), Inches(0.5), "Field after the run: blue = sprayed", size=16,
