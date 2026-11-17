@@ -1,0 +1,330 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[left=2.3cm,right=2.3cm,top=2.3cm,bottom=2.3cm]{geometry}
+\usepackage{xcolor,tcolorbox,enumitem,titlesec,fancyhdr,url}
+\definecolor{brand}{HTML}{1F6F4A}
+\definecolor{dark}{HTML}{142B20}
+\definecolor{soft}{HTML}{F3F6F1}
+
+\titleformat{\section}{\color{brand}\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\color{dark}\normalsize\bfseries}{}{0em}{}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small AISR P04 G11 \textbullet{} Video Scripts}
+\rhead{\small Project P04 \textbullet{} Batch B4}
+\cfoot{\thepage}
+
+\newtcolorbox{slidebox}[1]{
+  colback=soft,colframe=brand,coltitle=white,title={#1},
+  boxrule=0.6pt,arc=2pt,fonttitle=\bfseries,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,before skip=6pt,after skip=10pt,
+}
+
+\setlist[itemize]{leftmargin=1.3em,itemsep=2pt,topsep=2pt}
+
+\begin{document}
+
+\begin{center}
+{\color{brand}\Large\bfseries AISR P04 \textbullet{} Group G11 \textbullet{} Video Scripts}\\[4pt]
+{\small Agricultural Field Robot for Crop-Row Coverage \textbullet{} CSAI4014 \textbullet{} UPES Dehradun}\\[2pt]
+{\small Target 20 minutes (18--22 allowed) \textbullet{} speaking rate $\approx$ 140 wpm}
+\end{center}
+
+\vspace{4pt}
+\noindent\textbf{How to use this document.}
+Each person records their own section with their slide overlaid full-screen behind
+them (Zoom share-to-self, OBS, or PowerPoint ``Record Slide Show''). Files are named
+\texttt{G11\_<order>\_<Name>.mp4}, sent to Rudra, and stitched in slide order.
+Say your lines in your own words --- reading verbatim scores lower (rubric I2).
+
+\section{Opening (0:00--0:45) \textbullet{} Slide 1 \textbullet{} All members}
+
+\begin{slidebox}{Slide 1 \textbullet{} Title \textbullet{} 45 s \textbullet{} All members}
+\textbf{Rudra (on camera, slide 1 in the background):}\\
+``Good morning. We are Group G11 from Batch~B4, and this is our project P04,
+Agricultural Field Robot for Crop-Row Coverage, for the course CSAI4014. Let us
+introduce ourselves.''\\[4pt]
+Then each member records a short self-intro clip in this order:
+\begin{itemize}
+  \item \textbf{Jahanvi:} ``I am Jahanvi Sengar, SAP ID 500120543. I built the field model, the geometry utilities and the Webots world generator.''
+  \item \textbf{Aagman:} ``I am Aagman Sharma, SAP ID 500123462. I built the boustrophedon coverage planner, the figure scripts and the LaTeX report.''
+  \item \textbf{Rudra:} ``I am Rudra Gupta, SAP ID 500120437. I built the pure-pursuit and PID tracker, the layered agent and the Webots controller, and I merged the repository.''
+  \item \textbf{Sahil:} ``I am Sahil Agarwal, SAP ID 500120211. I built the lidar perception, the lane-preserving detour, the Bug2 and APF baselines, and the slide deck.''
+  \item \textbf{Harsh:} ``I am Harsh Prakash Sinha, SAP ID 500123860. I built the coverage metrics, the headless simulator and all the experiments and results.''
+\end{itemize}
+\textbf{Rudra (voice-over, cut to slide 2):}
+``Jahanvi will start with the problem.''
+\end{slidebox}
+
+\section{Jahanvi Sengar \textbullet{} Slides 2--3 \textbullet{} 0:45--4:00}
+
+\begin{slidebox}{Slide 2 \textbullet{} Problem and Motivation \textbullet{} 1:35 \textbullet{} Jahanvi}
+``A spraying robot has to cover every row of a crop field --- not more, not less.
+Miss a strip and weeds and disease take over; overlap a strip and you waste
+chemicals and water. The hard part is that real rows have obstacles in them.
+Stones from ploughing, irrigation risers and power poles sit right in the lane,
+and the robot doesn't know where they are in advance. On the picture on the
+left you can see the field we used: sixteen metres by ten, eleven lettuce rows
+one metre apart, with six stones and a power pole scattered across the lanes.
+Existing industrial sprayers --- Thorvald, lane-following tractors --- react to
+an obstacle by swerving out of the row, which keeps them safe but loses the
+lane pattern, so part of the crop is simply never treated. That gap is what
+we are solving: cover every lane, even when something unknown is blocking it.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 3 \textbullet{} Objectives \textbullet{} 1:35 \textbullet{} Jahanvi}
+``We set four measurable goals for the project.
+One: build the field world --- a sixteen-by-ten metre crop field with eleven
+lettuce rows, stones and poles, driven by a Pioneer 3-AT with lidar, GPS,
+inertial unit and a one-point-two metre sprayer boom.
+Two: cover the field row by row using a boustrophedon plan with arc and pivot
+headland turns, keeping the lane error below five centimetres RMS.
+Three: avoid the unknown obstacles with zero collisions and at least
+ninety-eight per cent coverage of the coverable area.
+And four: compare the method against Bug2 and APF on twenty random fields,
+and study how turn style, obstacle density, boom width and PID gains change
+the result. Every claim in this talk will come back to these four goals.
+Aagman will now explain what already exists and where our novelty sits.''
+\end{slidebox}
+
+\section{Aagman Sharma \textbullet{} Slides 4--6 \textbullet{} 4:00--7:15}
+
+\begin{slidebox}{Slide 4 \textbullet{} Existing Solutions and the Gap \textbullet{} 1:05 \textbullet{} Aagman}
+``The table on this slide summarises four classical approaches.
+Boustrophedon decomposition from Choset is complete and has low overlap, but
+it assumes obstacles are known in advance --- our field obstacles are not.
+Artificial potential field is simple and reactive, but it oscillates near
+narrow gaps and loses the lane. Bug2 is complete for a point robot, but it
+takes long detour loops. And the industrial approach --- lane following with
+a certified safety stop under ISO~18497 --- just stops and waits for a human.
+The gap we are filling is marked at the bottom: a sensor-based method that
+keeps the lane pattern intact when an unknown obstacle appears, measured
+against these classical baselines.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 5 \textbullet{} Novelty \textbullet{} 1:10 \textbullet{} Aagman}
+``There are five things that are new in our work.
+First, a lane-preserving detour: when a lane segment is blocked we replace
+exactly that segment with a safe arc that rejoins the same lane, and on
+twenty random fields we skip zero strips.
+Second, a robust lidar map for crops: we add ghost-return and tilt filters
+that removed seventeen phantom obstacles and stopped the robot from getting
+stuck. Third, one layered agent, one codebase: the same Python agent runs
+in Webots and in our headless simulator, with coverage within half a per cent.
+Fourth, a design study: arc turns are seven-point-four per cent faster than
+pivot turns, and a 1.2 metre boom on 1 metre lanes gives 98.8 per cent
+coverage with 24 per cent overlap. And fifth, live coverage accounting:
+a five-centimetre grid, sprayed soil painted blue in Webots, with an
+on-screen dashboard.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 6 \textbullet{} Syllabus Mapping \textbullet{} 1:00 \textbullet{} Aagman}
+``This table links the work back to the AISR syllabus.
+Uninhabited ground robots: the Pioneer 3-AT, its skid-steer, wheel limits
+and the lidar-GPS-IMU stack. Path planning: our boustrophedon plan, the
+geometric detour and the Bug2 and APF baselines. Planning to move: the
+arc and pivot headland turns, pure pursuit and speed scheduling.
+Application domains: precision agriculture --- spraying, coverage and
+overlap. Closed-loop control: a PID heading loop tuned from a step
+response. And perception plus software architecture: lidar clustering
+and the declarative-procedural-reflexive agent. Rudra will now take the
+architecture and the tracking.''
+\end{slidebox}
+
+\section{Rudra Gupta \textbullet{} Slides 7--9 \textbullet{} 7:15--10:30}
+
+\begin{slidebox}{Slide 7 \textbullet{} System Architecture \textbullet{} 1:05 \textbullet{} Rudra}
+``The architecture runs every 32 milliseconds --- that is the Webots step.
+On the left are the three sensors: a 180-ray 2-D lidar, GPS for x and y,
+and an inertial unit for roll, pitch and yaw. On the right are the three
+actuators: the four wheel motors in skid steer, the sprayer boom modelled
+as a Webots Pen, and the dashboard that writes CSV and JSON logs.
+In the middle sits our layered agent. The declarative layer holds the
+boustrophedon plan: lanes, turns and spray tags. The procedural layer
+runs lidar filtering, the obstacle map, the detour splice, and the
+pure-pursuit plus PID tracker. The reflexive layer is a safety stop:
+if anything comes within 40 centimetres, the robot stops and backs off.
+The same file --- \texttt{agri/agent.py} --- runs in Webots and in our
+headless simulator.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 8 \textbullet{} Robot and Environment Model \textbullet{} 1:00 \textbullet{} Rudra}
+``This is our robot and world.
+The Pioneer 3-AT is a four-wheel-drive skid-steer with wheel radius
+eleven centimetres and a maximum speed of seventy centimetres per second.
+We treat it as a unicycle, with wheel speeds given by the standard
+$v$ plus or minus $\omega b / 2$ over $r$ equation. The lidar sweeps
+180 degrees with 180 rays at 35 centimetres above the ground.
+The environment is a 16-by-10 metre crop field with eleven lettuce rows
+one metre apart, six stones, a power pole, irrigation risers and a post.
+The world is generated from a seed by \texttt{tools/generate\_world.py},
+so every one of our twenty experiments is a different field with the
+same rules.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 9 \textbullet{} Algorithm 1: Coverage Plan + Tracking \textbullet{} 1:10 \textbullet{} Rudra}
+``The coverage plan is boustrophedon: lane 1 north, lane 2 south, and so on.
+Between lanes we choose either an arc turn --- faster, 7.4 per cent --- or a
+pivot turn, which is slower but needs less space. The figure above shows the
+two turn shapes side by side.
+To follow the plan, the robot uses pure pursuit plus PID. Pure pursuit picks
+a look-ahead point on the planned path; the angle between that point and the
+current heading is the error $e$. PID gives the angular rate:
+$\omega = K_p e + K_i \int e + K_d \dot{e}$, with gains $K_p = 2.2$,
+$K_i = 0.05$, $K_d = 0.12$ --- tuned from a step response.
+Speed is scheduled: half a metre per second on a lane, 0.3 inside a turn,
+slowing down below 2 metres clearance; if the heading error is larger than
+55 degrees the robot pivots in place. Sahil will now take the perception
+and the detour.''
+\end{slidebox}
+
+\section{Sahil Agarwal \textbullet{} Slides 10--11 \textbullet{} 10:30--13:00}
+
+\begin{slidebox}{Slide 10 \textbullet{} Algorithm 2: Lidar Map + Detour \textbullet{} 1:20 \textbullet{} Sahil}
+``The lidar hits the lettuce and the soil as well as the stones, so raw
+returns are noisy. On the left of this slide is the filter pipeline:
+we drop returns below a height threshold, drop isolated single hits, then
+cluster the remaining points and fit a circle to each cluster. A cluster
+is confirmed as an obstacle only after it is seen in eight consecutive
+scans. That alone removed seventeen phantom obstacles during tuning.
+On the right is the geometry of the detour. We expand the obstacle by the
+robot radius plus a 30-centimetre safety margin --- that gives the detour
+radius $R = r + 0.32 + 0.30$ metres. We cut out the blocked segment of
+the lane, and we splice in the shorter of two safe arcs so the robot ends
+up back on the same lane. That is the key point: the plan doesn't change,
+only one segment does.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 11 \textbullet{} Simulation Setup \textbullet{} 1:10 \textbullet{} Sahil}
+``The simulator is Webots R2025a with a 32-millisecond step. The controller
+is Python 3, in a package called \texttt{agri}. Maximum speed is half a
+metre per second, turn speed is 0.3. The boom is 1.2 metres on 1-metre
+lane spacing --- that is the overlap we study on slide five. The detour
+margin is 30 centimetres with a 5-metre horizon. We run twenty random
+fields crossed with three methods --- our proposed method, Bug2 and APF.
+The commands on the right are exactly what you type: open
+\texttt{worlds/crop\_field.wbt} to see one run; \texttt{generate\_world.py}
+makes a new seeded field; \texttt{run\_webots.py} drives the batch; and
+\texttt{run\_experiments.py} plus \texttt{make\_figures.py} produce the
+statistics and the figures.
+Rudra will now walk you through a live Webots run.''
+\end{slidebox}
+
+\section{Rudra Gupta (demo voice-over) \textbullet{} Slide 12 \textbullet{} 13:00--16:45}
+
+\begin{slidebox}{Slide 12 \textbullet{} Webots Demonstration \textbullet{} 3:45 \textbullet{} Rudra (voice-over)}
+\textbf{This section is recorded as a Webots screen capture --- no camera.
+Open \texttt{worlds/crop\_field.wbt}, press Run, and narrate the following as
+the robot drives. Pause the simulation where helpful.}\\[4pt]
+
+``This is the Webots world, \texttt{crop\_field.wbt}. The grey ground is
+soil, the green line patches are lettuce rows, and the small grey shapes
+scattered across the field are the unknown obstacles --- six stones and
+a power pole. The robot is the Pioneer 3-AT sitting at the bottom-left
+corner. I'm pressing Run now.
+
+The robot enters lane one, going north. You can see the sprayer is on:
+the ground is being painted blue behind it, which is our coverage grid.
+On the top-right of the screen is the dashboard --- state, coverage per
+cent, lane number and a minimap of the plan. Right now it's saying
+`lane-follow'.
+
+The lidar has picked up the first stone. Watch the speed indicator ---
+it drops from 0.5 to 0.3 because clearance is below two metres. Now the
+detour fires: the state says `detour', the robot arcs around the stone,
+and --- here --- it rejoins the same lane. Exactly where the detour
+started, we picked up where we left off. No lane was skipped.
+
+End of lane one. The sprayer turns off --- notice the ground stops
+painting --- the robot takes an arc headland turn, enters lane two, and
+flips the sprayer on again. This is the boustrophedon pattern.
+
+Here is a pole in lane four. The pole is taller and thinner than a stone
+but the perception doesn't care: cluster plus circle fit, confirmed over
+eight scans, detour, rejoin. On the dashboard, coverage has climbed past
+sixty per cent.
+
+A few more lanes. On this one the robot slows down because two obstacles
+are close together, and it takes the shorter of the two safe arcs. The
+reflexive layer stayed silent the whole time --- nothing came within the
+40-centimetre stop distance.
+
+And here is the end. Final coverage: 98.4 per cent in this seed, 414
+seconds of wall clock time, zero collisions, RMS lane error around two
+centimetres. The field is almost entirely blue, which is the coverage
+map we log to CSV. That's the method working end-to-end.
+Harsh will now show you the numbers across twenty fields.''
+\end{slidebox}
+
+\section{Harsh Prakash Sinha \textbullet{} Slides 13--15 \textbullet{} 16:45--19:15}
+
+\begin{slidebox}{Slide 13 \textbullet{} Results 1: Same Field, Three Methods \textbullet{} 0:50 \textbullet{} Harsh}
+``On the same seeded field, the three methods look like this.
+The proposed method covers 98.43 per cent in 414.6 seconds with zero
+collisions. Bug2 covers only 95.51 per cent in 449 seconds --- it loops
+around every obstacle, which costs time and leaves gaps. APF covers
+97.74 per cent but, in this run, came within 2.1 centimetres of a stone
+--- it does not reliably clear the obstacle. You can see the three
+trajectories above: the green one keeps the lane, the orange one takes
+long Bug2 loops, and the red one wanders.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 14 \textbullet{} Results 2: 20 Random Fields \textbullet{} 0:55 \textbullet{} Harsh}
+``Across twenty random fields we get four statistics worth remembering.
+Mean coverage for the proposed method is 98.85 per cent, versus 95.4 for
+Bug2 and 85.3 for APF. All twenty fields finished with our method ---
+APF only finished fifteen. Mean time was 412 seconds, versus 472 for
+Bug2 and 781 for APF. And RMS lane error was 2.1 centimetres, versus
+11.3 and 28.3. The box plot above shows the spread: the proposed method
+is tight and high; the baselines are wide and low. That is what the
+lane-preserving detour buys you statistically.''
+\end{slidebox}
+
+\begin{slidebox}{Slide 15 \textbullet{} Team Contribution \textbullet{} 1:20 \textbullet{} Harsh}
+``The table below shows who owns what.
+Jahanvi: the field model and the Webots world generator --- \texttt{field.py}
+and \texttt{generate\_world.py} --- and report sections Abstract, 1, 2 and 13.
+Aagman: the boustrophedon planner with arc and pivot turns, and the figure
+scripts --- \texttt{planner.py} and \texttt{make\_figures.py} --- and report
+sections 3 and 4.
+Rudra: the PID and pure-pursuit tracker, the layered agent and the Webots
+controller --- \texttt{navigation.py}, \texttt{agent.py} --- and sections 5
+and 6.
+Sahil: the lidar filters, the obstacle map, the detour, and the Bug2 and
+APF baselines --- \texttt{avoidance.py} --- and sections 7 and 8.
+And me: the coverage metrics, the headless simulator, and the Monte-Carlo
+and Webots experiments --- \texttt{coverage.py} --- and sections 9, 12 and
+the appendix.
+Every module can be traced to the owner's GitHub commits in the repository.''
+\end{slidebox}
+
+\section{Closing (19:15--20:15) \textbullet{} Slides 16--17 \textbullet{} All members}
+
+\begin{slidebox}{Slide 16 \textbullet{} Conclusion and Industry Use \textbullet{} 40 s \textbullet{} Closing clips}
+Each member records one line, in order:
+\begin{itemize}
+  \item \textbf{Jahanvi:} ``Our robot covered 98.85 per cent of the field with zero collisions and kept its lane in all twenty fields.''
+  \item \textbf{Aagman:} ``Compared with Bug2 and APF it misses four to thirteen times less area and is thirteen to forty-seven per cent faster.''
+  \item \textbf{Sahil:} ``In industry this suits spraying, weeding and scouting robots, and the coverage map can be used as a treatment record.''
+  \item \textbf{Harsh:} ``Next steps are a real robot with RTK-GNSS and ROS~2, and obstacles that are not circles, like fences and ditches.''
+\end{itemize}
+\end{slidebox}
+
+\begin{slidebox}{Slide 17 \textbullet{} Thank you \textbullet{} 20 s \textbullet{} Rudra closes}
+\textbf{Rudra:} ``As a team we learned a Git workflow, Webots and how to
+run fair experiments. Our code is on GitHub at the link on this slide:
+\url{github.com/byRudra/AgriCoverageRobot_G11}. Thank you, we are happy
+to take questions.''
+\end{slidebox}
+
+\vspace{6pt}
+\noindent\textbf{Recording checklist.}
+\begin{itemize}[leftmargin=1.3em]
+  \item Camera as a small picture-in-picture bubble; slide full-screen behind.
+  \item 1080p MP4, filename \texttt{G11\_<order>\_<Name>.mp4} (e.g.\ \texttt{G11\_02\_Jahanvi.mp4}).
+  \item No cuts inside your own clip; only cuts between clips (Rudra handles those).
+  \item Send your clip to Rudra. Rudra normalises audio, stitches in the running order, uploads to YouTube as \textbf{Unlisted}, and pastes the link into the report appendix and slide 17.
+\end{itemize}
+
+\end{document}

@@ -369,7 +369,7 @@ text(s, Inches(7.5), Inches(1.55), Inches(5.2), Inches(5.1),
      size=16, color=RGBColor(0xD1, 0xFA, 0xE5), font="Consolas")
 
 # ====================================================================== 12 Live demo
-s = new_slide("Live Demonstration", "Rudra + Sahil", "Switching to Webots: crop_field.wbt")
+s = new_slide("Webots Demonstration", M[3], "crop_field.wbt: proposed method, arc turns")
 picture_fit(s, "shot_follow.jpg", Inches(0.55), Inches(1.65), Inches(7.6), Inches(5.1))
 bullets(s, Inches(8.4), Inches(1.8), Inches(4.6), Inches(5), [
     "Lane following, sprayer ON",
